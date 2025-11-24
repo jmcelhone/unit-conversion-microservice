@@ -17,7 +17,7 @@ def get_unit(unit, value):
         value = (value * 1.8) + 32
         unit = "fahrenheit"
     elif "fahrenheit" in unit:
-        value = (value / 1.8) - 32
+        value = (value - 32) / 1.8
         unit = "celsius"
     elif "liter" in unit:
         value *= 0.264
@@ -52,16 +52,14 @@ def main():
     socket = context.socket(zmq.REP)
     socket.bind("tcp://*:5555")
 
-    print("ASCII Service Listening on Port 5555")
-
-    
+    print("Unit Conversion Service Listening on Port 5555")
 
     while True:
         message = socket.recv_string()
 
         if len(message) > 0:
-            split_message = message.decode().split()
-            value = split_message[0]
+            split_message = message.split()
+            value = int(split_message[0])
             unit = split_message[1].lower()
             new_unit = get_unit(unit, value)
             socket.send_string(new_unit)
